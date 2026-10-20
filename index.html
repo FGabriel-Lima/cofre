@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Cofre Desafio 10 Mil</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐷</text></svg>">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=Figtree:wght@400;600;700&display=swap">
+<style>
+/* Uma coluna estreita; placar no topo, legenda das cédulas, grade 10×20 tocável. Cores das células = cores das cédulas do real. */
+:root{
+  --bg:#eef2ee;--card:#ffffff;--fg:#1b2420;--muted:#5a6a62;--linha:#d5ddd7;--acento:#1e6a4e;
+  --n5:#8457b0;--n10:#c0475a;--n20:#c98f12;--n100:#2c7bab;--n200:#85654a;--sobre:#ffffff;--sobre20:#2a1d00;
+  --display:"Bricolage Grotesque",ui-sans-serif,system-ui,sans-serif;
+  --corpo:"Figtree",ui-sans-serif,system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#111714;--card:#19211d;--fg:#e5ebe7;--muted:#97a69e;--linha:#2b3731;--acento:#5cc497;
+  --n5:#a47fd0;--n10:#e06a7c;--n20:#e2ab35;--n100:#4f9fd0;--n200:#b08d6d;--sobre:#0f1411;--sobre20:#1d1400;color-scheme:dark}}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--corpo);font-size:15px;line-height:1.5}
+.pagina{max-width:760px;margin:0 auto;padding-block:max(28px,env(safe-area-inset-top,0px)) max(40px,env(safe-area-inset-bottom,0px));padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:20px}
+.selo{margin:0;font-size:.75rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--acento)}
+h1{margin:2px 0 4px;font-family:var(--display);font-weight:800;font-size:clamp(2.1rem,7vw,3.2rem);line-height:1;letter-spacing:-.02em;text-wrap:balance}
+.sub{margin:0;color:var(--muted);max-width:52ch}
+.placar{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px 16px;background:var(--card);border:1px solid var(--linha);border-radius:14px;padding:16px}
+.placar div{min-width:0}
+.rotulo{display:block;font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.placar strong{display:block;font-family:var(--display);font-weight:800;font-size:clamp(1.05rem,4.4vw,1.6rem);font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#total{color:var(--acento)}
+.barra{grid-column:1/-1;height:10px;border-radius:99px;background:color-mix(in srgb,var(--acento) 14%,var(--bg));overflow:hidden}
+.barra span{display:block;height:100%;width:0;background:var(--acento);border-radius:inherit;transition:width .4s ease}
+.notas{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
+.notas li{display:flex;align-items:center;gap:8px;padding:5px 10px 5px 6px;border-radius:99px;background:var(--card);border:1px solid var(--linha);font-size:.82rem;font-variant-numeric:tabular-nums;color:var(--muted)}
+.notas b{color:var(--fg);font-weight:700}
+.notas i{width:22px;height:14px;border-radius:3px;background:var(--n)}
+.v5{--n:var(--n5);--t:var(--sobre)}.v10{--n:var(--n10);--t:var(--sobre)}.v20{--n:var(--n20);--t:var(--sobre20)}.v100{--n:var(--n100);--t:var(--sobre)}.v200{--n:var(--n200);--t:var(--sobre)}
+.grade{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:4px}
+.cel{appearance:none;margin:0;min-width:0;min-height:2.5rem;padding:0;border-radius:6px;border:1px solid color-mix(in srgb,var(--n) 40%,var(--linha));background:color-mix(in srgb,var(--n) 9%,var(--card));color:var(--fg);font:600 clamp(.7rem,2.7vw,.95rem)/1 var(--corpo);font-variant-numeric:tabular-nums;cursor:pointer;transition:background .15s,transform .1s}
+.cel:hover{background:color-mix(in srgb,var(--n) 22%,var(--card))}
+.cel:active{transform:scale(.94)}
+.cel:focus-visible{outline:2px solid var(--fg);outline-offset:2px}
+.cel[aria-pressed="true"]{background:var(--n);border-color:var(--n);color:var(--t)}
+.cel:disabled{cursor:default;opacity:.6}
+.status{margin:0;min-height:1.5em;font-size:.85rem;color:var(--muted);text-align:center}
+@media (max-width:420px){.placar{padding:12px;gap:10px}.grade{gap:3px}.cel{border-radius:4px}}
+@media (prefers-reduced-motion:reduce){.cel,.barra span{transition:none}}
+</style>
+</head>
+<body>
+<main class="pagina">
+<header>
+<p class="selo">Cofre a dois</p>
+<h1>Desafio 10 Mil</h1>
+<p class="sub">200 depósitos para juntar R$ 10.000,00. Colocou o dinheiro no cofre? Toque no valor para riscar.</p>
+</header>
+<section class="placar" aria-label="Progresso">
+<div><span class="rotulo">Guardado</span><strong id="total"></strong></div>
+<div><span class="rotulo">Falta</span><strong id="falta"></strong></div>
+<div><span class="rotulo">Depósitos</span><strong id="feitos"></strong></div>
+<div class="barra"><span id="barra"></span></div>
+</section>
+<ul class="notas" id="notas" aria-label="Quantos faltam de cada valor"></ul>
+<div class="grade" id="grade" role="group" aria-label="Depósitos"></div>
+<p class="status" id="status" aria-live="polite">Conectando…</p>
+</main>
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+import { getDatabase, ref, onValue, set, remove } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js';
+
+// Configuração do app web no console do Firebase (não é segredo; o acesso é controlado pelas regras do banco)
+const firebaseConfig = {
+  // COLE AQUI
+};
+
+const META = 10000;
+// 50×5 + 41×10 + 47×20 + 40×100 + 22×200 = 10.000 em 200 depósitos
+const QTD = { 5: 50, 10: 41, 20: 47, 100: 40, 200: 22 };
+const VALORES = (() => {
+  const v = Object.entries(QTD).flatMap(([valor, n]) => Array(n).fill(+valor));
+  let a = 2026; // semente fixa: a grade é sempre a mesma
+  const r = () => { a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+  for (let i = v.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [v[i], v[j]] = [v[j], v[i]]; }
+  return v;
+})();
+
+const $ = id => document.getElementById(id);
+const reais = n => n.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+const status = t => { $('status').textContent = t; };
+let marcados = new Set();
+
+const grade = $('grade');
+VALORES.forEach((v, i) => {
+  const b = document.createElement('button');
+  b.type = 'button'; b.className = 'cel v' + v; b.textContent = v; b.dataset.i = i; b.disabled = true;
+  grade.append(b);
+});
+
+function render() {
+  let total = 0; const resta = { ...QTD };
+  grade.querySelectorAll('.cel').forEach(b => {
+    const i = +b.dataset.i, on = marcados.has(i);
+    b.setAttribute('aria-pressed', on);
+    b.setAttribute('aria-label', 'R$ ' + VALORES[i] + (on ? ', depositado' : ''));
+    if (on) { total += VALORES[i]; resta[VALORES[i]]--; }
+  });
+  $('total').textContent = reais(total);
+  $('falta').textContent = reais(META - total);
+  $('feitos').textContent = marcados.size + '/200';
+  $('barra').style.width = (total / META * 100) + '%';
+  $('notas').innerHTML = Object.keys(QTD).map(v =>
+    `<li class="v${v}"><i></i><b>R$ ${v}</b> faltam ${resta[v]} de ${QTD[v]}</li>`).join('');
+  if (total === META) status('Cofre cheio! R$ 10.000,00 guardados. 🎉');
+}
+render();
+
+// O código do cofre vem depois do # no link e só funciona se estiver nas regras do banco
+const codigo = location.hash.slice(1);
+if (!/^[A-Za-z0-9]{12,}$/.test(codigo)) {
+  status('Abra o cofre pelo link completo, com o código depois do #.');
+} else {
+  const db = getDatabase(initializeApp(firebaseConfig));
+  const base = `cofres/${codigo}/marcados`;
+  onValue(ref(db, base), snap => {
+    marcados = new Set(Object.keys(snap.val() || {}).map(Number));
+    grade.querySelectorAll('.cel').forEach(b => { b.disabled = false; });
+    status('');
+    render();
+  }, () => status('Este link não abre nenhum cofre. Confira se ele está completo.'));
+
+  grade.addEventListener('click', e => {
+    const b = e.target.closest('.cel');
+    if (!b) return;
+    const r = ref(db, `${base}/${b.dataset.i}`);
+    (marcados.has(+b.dataset.i) ? remove(r) : set(r, true))
+      .catch(() => status('Não deu para salvar. Confira a internet e toque de novo.'));
+  });
+}
+</script>
+</body>
+</html>
