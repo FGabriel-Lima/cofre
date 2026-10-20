@@ -5,63 +5,117 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Cofre Desafio 10 Mil</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐷</text></svg>">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=Figtree:wght@400;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,700;0,6..96,800;1,6..96,600&family=Figtree:wght@400;600;700&family=IBM+Plex+Mono:wght@500&display=swap">
 <style>
-/* Uma coluna estreita; placar no topo, legenda das cédulas, grade 10×20 tocável. Cores das células = cores das cédulas do real. */
+/* Uma coluna: a cédula de 10 mil (gravura que vai sendo impressa com o progresso), os maços por valor e a grade 10×20.
+   Cores das células = cores das cédulas do real. */
 :root{
-  --bg:#eef2ee;--card:#ffffff;--fg:#1b2420;--muted:#5a6a62;--linha:#d5ddd7;--acento:#1e6a4e;
-  --n5:#8457b0;--n10:#c0475a;--n20:#c98f12;--n100:#2c7bab;--n200:#85654a;--sobre:#ffffff;--sobre20:#2a1d00;
-  --display:"Bricolage Grotesque",ui-sans-serif,system-ui,sans-serif;
+  --papel:#e6ede8;--cartao:#f6f9f6;--tinta:#16231d;--apagado:#56675e;--fio:#cbd7cf;
+  --verde:#1d5f45;--nota:#dbe8df;--gravura:#2a7556;
+  --n5:#8457b0;--n10:#bf4558;--n20:#c88d10;--n100:#2b79a9;--n200:#846449;--sobre:#ffffff;--sobre20:#2a1d00;
+  --display:"Bodoni Moda","Didot","Bodoni 72",Georgia,serif;
   --corpo:"Figtree",ui-sans-serif,system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
 }
 @media (prefers-color-scheme:dark){:root{
-  --bg:#111714;--card:#19211d;--fg:#e5ebe7;--muted:#97a69e;--linha:#2b3731;--acento:#5cc497;
-  --n5:#a47fd0;--n10:#e06a7c;--n20:#e2ab35;--n100:#4f9fd0;--n200:#b08d6d;--sobre:#0f1411;--sobre20:#1d1400;color-scheme:dark}}
-body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--corpo);font-size:15px;line-height:1.5}
-.pagina{max-width:760px;margin:0 auto;padding-block:max(28px,env(safe-area-inset-top,0px)) max(40px,env(safe-area-inset-bottom,0px));padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:20px}
-.selo{margin:0;font-size:.75rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--acento)}
-h1{margin:2px 0 4px;font-family:var(--display);font-weight:800;font-size:clamp(2.1rem,7vw,3.2rem);line-height:1;letter-spacing:-.02em;text-wrap:balance}
-.sub{margin:0;color:var(--muted);max-width:52ch}
-.placar{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px 16px;background:var(--card);border:1px solid var(--linha);border-radius:14px;padding:16px}
-.placar div{min-width:0}
-.rotulo{display:block;font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
-.placar strong{display:block;font-family:var(--display);font-weight:800;font-size:clamp(1.05rem,4.4vw,1.6rem);font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-#total{color:var(--acento)}
-.barra{grid-column:1/-1;height:10px;border-radius:99px;background:color-mix(in srgb,var(--acento) 14%,var(--bg));overflow:hidden}
-.barra span{display:block;height:100%;width:0;background:var(--acento);border-radius:inherit;transition:width .4s ease}
-.notas{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
-.notas li{display:flex;align-items:center;gap:8px;padding:5px 10px 5px 6px;border-radius:99px;background:var(--card);border:1px solid var(--linha);font-size:.82rem;font-variant-numeric:tabular-nums;color:var(--muted)}
-.notas b{color:var(--fg);font-weight:700}
-.notas i{width:22px;height:14px;border-radius:3px;background:var(--n)}
+  --papel:#0c1511;--cartao:#121d18;--tinta:#e4ece7;--apagado:#90a097;--fio:#22322a;
+  --verde:#74d0a2;--nota:#10241b;--gravura:#d3b56a;
+  --n5:#a47fd0;--n10:#e06a7c;--n20:#e2ab35;--n100:#4f9fd0;--n200:#b08d6d;--sobre:#0c1511;--sobre20:#1d1400;color-scheme:dark}}
+
+*{box-sizing:border-box}
+body{margin:0;background:var(--papel);color:var(--tinta);font-family:var(--corpo);font-size:15px;line-height:1.5;-webkit-tap-highlight-color:transparent}
+.pagina{max-width:720px;margin:0 auto;padding-block:max(28px,env(safe-area-inset-top,0px)) max(48px,env(safe-area-inset-bottom,0px));padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:28px}
+
+/* Título */
+.topo{display:flex;align-items:baseline;justify-content:space-between;gap:8px 16px;flex-wrap:wrap}
+h1{margin:0;font-family:var(--display);font-weight:800;font-size:clamp(2rem,7.5vw,3.1rem);line-height:1;letter-spacing:-.01em}
+h1 em{font-style:italic;font-weight:600;color:var(--verde)}
+.selo{margin:0;font-family:var(--mono);font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--apagado)}
+
+/* A cédula */
+.cedula{position:relative;isolation:isolate;overflow:hidden;border-radius:16px;background:var(--nota);border:1px solid color-mix(in srgb,var(--gravura) 30%,var(--fio));min-height:clamp(210px,42vw,280px);padding:clamp(18px,4vw,28px);display:grid;grid-template-rows:auto 1fr auto;gap:6px;box-shadow:0 1px 0 color-mix(in srgb,var(--gravura) 12%,transparent),0 18px 40px -28px color-mix(in srgb,var(--tinta) 60%,transparent)}
+.cedula canvas{position:absolute;inset:0;width:100%;height:100%;z-index:-1}
+.fantasma{opacity:.16}
+.impressa{clip-path:inset(0 calc(100% - var(--p,0%)) 0 0);transition:clip-path .9s cubic-bezier(.2,.7,.2,1)}
+.cedula::after{content:"";position:absolute;inset:8px;border:1px solid color-mix(in srgb,var(--gravura) 35%,transparent);border-radius:10px;z-index:-1;pointer-events:none}
+.ced-topo{display:flex;justify-content:space-between;gap:12px;font-family:var(--mono);font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--apagado)}
+.ced-meio{align-self:center;display:grid;gap:2px}
+.rotulo{font-size:.78rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--apagado)}
+#total{font-family:var(--display);font-weight:800;font-size:clamp(2.6rem,11vw,4.6rem);line-height:.95;letter-spacing:-.02em;font-variant-numeric:lining-nums;color:var(--tinta);text-shadow:0 0 18px var(--nota),0 0 6px var(--nota)}
+#total small{font-size:.42em;font-weight:700;margin-right:.12em;vertical-align:.9em}
+.ced-meta{color:var(--apagado);font-size:.9rem;text-shadow:0 0 8px var(--nota)}
+.ced-meta b{color:var(--tinta);font-variant-numeric:tabular-nums}
+.ced-base{display:flex;justify-content:space-between;align-items:end;gap:12px;font-family:var(--mono);font-size:.78rem;font-variant-numeric:tabular-nums;color:var(--tinta);text-shadow:0 0 6px var(--nota),0 0 2px var(--nota)}
+.serie{letter-spacing:.08em}
+#pct{font-family:var(--display);font-weight:800;font-style:normal;font-size:1.5rem;line-height:1;color:var(--verde)}
+
+/* Maços por valor */
+.secao{display:grid;gap:12px}
+.secao-topo{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+h2{margin:0;font-family:var(--display);font-weight:700;font-size:1.25rem;line-height:1.2}
+.dica{font-size:.82rem;color:var(--apagado)}
+.macos{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+.macos li{min-width:0;display:grid;gap:6px;padding:10px 10px 9px;border-radius:10px;background:var(--cartao);border:1px solid var(--fio)}
+.macos .valor{font-family:var(--display);font-weight:800;font-size:1.15rem;line-height:1;color:var(--n);font-variant-numeric:lining-nums}
+.macos .valor small{font-size:.6em;margin-right:.1em}
+.macos .resto{font-size:.74rem;color:var(--apagado);font-variant-numeric:tabular-nums;white-space:nowrap}
+.macos .trilho{height:4px;border-radius:99px;background:color-mix(in srgb,var(--n) 16%,var(--cartao));overflow:hidden}
+.macos .trilho span{display:block;height:100%;background:var(--n);transition:width .5s ease}
 .v5{--n:var(--n5);--t:var(--sobre)}.v10{--n:var(--n10);--t:var(--sobre)}.v20{--n:var(--n20);--t:var(--sobre20)}.v100{--n:var(--n100);--t:var(--sobre)}.v200{--n:var(--n200);--t:var(--sobre)}
-.grade{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:4px}
-.cel{appearance:none;margin:0;min-width:0;min-height:2.5rem;padding:0;border-radius:6px;border:1px solid color-mix(in srgb,var(--n) 40%,var(--linha));background:color-mix(in srgb,var(--n) 9%,var(--card));color:var(--fg);font:600 clamp(.7rem,2.7vw,.95rem)/1 var(--corpo);font-variant-numeric:tabular-nums;cursor:pointer;transition:background .15s,transform .1s}
-.cel:hover{background:color-mix(in srgb,var(--n) 22%,var(--card))}
-.cel:active{transform:scale(.94)}
-.cel:focus-visible{outline:2px solid var(--fg);outline-offset:2px}
-.cel[aria-pressed="true"]{background:var(--n);border-color:var(--n);color:var(--t)}
-.cel:disabled{cursor:default;opacity:.6}
-.status{margin:0;min-height:1.5em;font-size:.85rem;color:var(--muted);text-align:center}
-@media (max-width:420px){.placar{padding:12px;gap:10px}.grade{gap:3px}.cel{border-radius:4px}}
-@media (prefers-reduced-motion:reduce){.cel,.barra span{transition:none}}
+
+/* Grade: cada vaga é um espaço no cofre esperando a nota */
+.grade{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:5px}
+.cel{position:relative;appearance:none;margin:0;min-width:0;min-height:2.6rem;padding:0;border-radius:6px;border:1.5px dashed color-mix(in srgb,var(--n) 55%,var(--fio));background:color-mix(in srgb,var(--n) 6%,var(--cartao));color:color-mix(in srgb,var(--n) 80%,var(--tinta));font:700 clamp(.7rem,2.8vw,.95rem)/1 var(--corpo);font-variant-numeric:tabular-nums;cursor:pointer;transition:background .15s,border-color .15s}
+.cel:hover{background:color-mix(in srgb,var(--n) 16%,var(--cartao))}
+.cel:focus-visible{outline:2px solid var(--tinta);outline-offset:2px}
+.cel[aria-pressed="true"]{border-style:solid;border-color:var(--n);color:var(--t);background:repeating-linear-gradient(-58deg,color-mix(in srgb,var(--t) 13%,transparent) 0 1px,transparent 1px 4px),var(--n)}
+.cel.carimbo{animation:carimbo .28s cubic-bezier(.3,1.6,.5,1)}
+@keyframes carimbo{0%{transform:scale(1.18)}100%{transform:scale(1)}}
+.cel:disabled{cursor:default;opacity:.55}
+
+.status{margin:0;min-height:1.5em;font-size:.85rem;color:var(--apagado);text-align:center}
+.cheio .ced-meta{color:var(--verde);font-weight:700}
+
+@media (max-width:520px){
+  .macos{grid-template-columns:repeat(5,minmax(0,1fr));gap:5px}
+  .macos li{padding:8px 6px 7px;border-radius:8px}
+  .macos .valor{font-size:.98rem}
+  .macos .resto{font-size:.66rem}
+  .grade{gap:3px}.cel{border-radius:4px;min-height:2.4rem}
+  .dica,.pal{display:none}
+}
+@media (prefers-reduced-motion:reduce){.impressa,.macos .trilho span,.cel{transition:none}.cel.carimbo{animation:none}}
 </style>
 </head>
 <body>
 <main class="pagina">
-<header>
+<header class="topo">
+<h1>Desafio <em>10 Mil</em></h1>
 <p class="selo">Cofre a dois</p>
-<h1>Desafio 10 Mil</h1>
-<p class="sub">200 depósitos para juntar R$ 10.000,00. Colocou o dinheiro no cofre? Toque no valor para riscar.</p>
 </header>
-<section class="placar" aria-label="Progresso">
-<div><span class="rotulo">Guardado</span><strong id="total"></strong></div>
-<div><span class="rotulo">Falta</span><strong id="falta"></strong></div>
-<div><span class="rotulo">Depósitos</span><strong id="feitos"></strong></div>
-<div class="barra"><span id="barra"></span></div>
+
+<section class="cedula" id="cedula" aria-label="Progresso do cofre">
+<canvas class="fantasma" aria-hidden="true"></canvas>
+<canvas class="impressa" aria-hidden="true"></canvas>
+<div class="ced-topo"><span>Dez mil reais</span><span>Série 2026</span></div>
+<div class="ced-meio">
+<span class="rotulo">Guardado</span>
+<strong id="total"></strong>
+<span class="ced-meta" id="falta"></span>
+</div>
+<div class="ced-base"><span class="serie" id="feitos"></span><em id="pct"></em></div>
 </section>
-<ul class="notas" id="notas" aria-label="Quantos faltam de cada valor"></ul>
-<div class="grade" id="grade" role="group" aria-label="Depósitos"></div>
+
+<section class="secao" aria-labelledby="t-macos">
+<div class="secao-topo"><h2 id="t-macos">Quanto falta de cada nota</h2></div>
+<ul class="macos" id="macos"></ul>
+</section>
+
+<section class="secao" aria-labelledby="t-grade">
+<div class="secao-topo"><h2 id="t-grade">Os 200 depósitos</h2><span class="dica">Guardou o dinheiro? Toque no valor.</span></div>
+<div class="grade" id="grade" role="group" aria-labelledby="t-grade"></div>
 <p class="status" id="status" aria-live="polite">Conectando…</p>
+</section>
 </main>
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
@@ -94,6 +148,39 @@ const reais = n => n.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL
 const status = t => { $('status').textContent = t; };
 let marcados = new Set();
 
+// Gravura da cédula: ondas e uma roseta (hipotrocoide), desenhadas duas vezes: apagada e "impressa" até o progresso
+const cedula = $('cedula');
+function gravura() {
+  const cor = getComputedStyle(cedula).getPropertyValue('--gravura').trim();
+  cedula.querySelectorAll('canvas').forEach(cv => {
+    const dpr = devicePixelRatio || 1, w = cv.clientWidth, h = cv.clientHeight;
+    cv.width = w * dpr; cv.height = h * dpr;
+    const c = cv.getContext('2d');
+    c.scale(dpr, dpr); c.strokeStyle = cor; c.lineWidth = .7;
+    for (let k = 0; k < 16; k++) {
+      c.beginPath();
+      for (let x = 0; x <= w; x += 2) {
+        const y = h * .83 + Math.sin(x / 41 + k * .38) * h * .09 + Math.sin(x / 113 - k * .21) * h * .06;
+        x ? c.lineTo(x, y) : c.moveTo(x, y);
+      }
+      c.stroke();
+    }
+    const R0 = Math.min(h * .44, w * .24), cx = w - R0 - Math.min(28, w * .05), cy = h * .46;
+    for (let s = 0; s < 4; s++) {
+      const esc = R0 * (1 - s * .17) / 13;
+      c.beginPath();
+      for (let t = 0; t <= Math.PI * 6 + .01; t += .01) {
+        const a = t + s * .21;
+        const x = 8 * Math.cos(a) + 5 * Math.cos(8 / 3 * a), y = 8 * Math.sin(a) - 5 * Math.sin(8 / 3 * a);
+        t ? c.lineTo(cx + x * esc, cy + y * esc) : c.moveTo(cx + x * esc, cy + y * esc);
+      }
+      c.stroke();
+    }
+  });
+}
+new ResizeObserver(gravura).observe(cedula);
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change', gravura);
+
 const grade = $('grade');
 VALORES.forEach((v, i) => {
   const b = document.createElement('button');
@@ -109,13 +196,17 @@ function render() {
     b.setAttribute('aria-label', 'R$ ' + VALORES[i] + (on ? ', depositado' : ''));
     if (on) { total += VALORES[i]; resta[VALORES[i]]--; }
   });
-  $('total').textContent = reais(total);
-  $('falta').textContent = reais(META - total);
-  $('feitos').textContent = marcados.size + '/200';
-  $('barra').style.width = (total / META * 100) + '%';
-  $('notas').innerHTML = Object.keys(QTD).map(v =>
-    `<li class="v${v}"><i></i><b>R$ ${v}</b> faltam ${resta[v]} de ${QTD[v]}</li>`).join('');
-  if (total === META) status('Cofre cheio! R$ 10.000,00 guardados. 🎉');
+  const pct = total / META * 100;
+  $('total').innerHTML = '<small>R$</small>' + total.toLocaleString('pt-BR');
+  $('falta').innerHTML = total === META ? 'Cofre cheio. Missão cumprida! 🎉' : `Faltam <b>${reais(META - total)}</b> para os R$ 10.000,00`;
+  $('feitos').textContent = `Nº ${String(marcados.size).padStart(3, '0')} / 200 depósitos`;
+  $('pct').textContent = Math.floor(pct) + '%';
+  cedula.style.setProperty('--p', pct + '%');
+  cedula.classList.toggle('cheio', total === META);
+  $('macos').innerHTML = Object.keys(QTD).map(v => `<li class="v${v}">
+    <span class="valor"><small>R$</small>${v}</span>
+    <span class="trilho"><span style="width:${(QTD[v] - resta[v]) / QTD[v] * 100}%"></span></span>
+    <span class="resto"><span class="pal">faltam </span>${resta[v]}/${QTD[v]}</span></li>`).join('');
 }
 render();
 
@@ -137,6 +228,7 @@ if (!/^[A-Za-z0-9]{12,}$/.test(codigo)) {
     const b = e.target.closest('.cel');
     if (!b) return;
     const r = ref(db, `${base}/${b.dataset.i}`);
+    if (!marcados.has(+b.dataset.i)) { b.classList.remove('carimbo'); void b.offsetWidth; b.classList.add('carimbo'); }
     (marcados.has(+b.dataset.i) ? remove(r) : set(r, true))
       .catch(() => status('Não deu para salvar. Confira a internet e toque de novo.'));
   });
